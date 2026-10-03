@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     qwen_api_key: str = ""
     qwen_model: str = ""
     gemma_api_key: str = ""
-    gemma_model: str = ""
+    gemma_model: str = "gemma-4-31b-it"
+    gemma_fallback_model: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

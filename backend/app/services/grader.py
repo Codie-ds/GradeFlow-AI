@@ -24,10 +24,149 @@ import random
 from app.config import settings
 
 
+from app.services.gemma_client import call_gemma_json
+import logging
+import json
+
+logger = logging.getLogger(__name__)
+
 def grade_answers(extraction: list[dict], questions_with_rubrics: list[dict]) -> dict:
     if not settings.mock_ai:
-        raise NotImplementedError("Real grading (Gemma) not yet integrated.")
+        return _real_grade(extraction, questions_with_rubrics)
     return _mock_grade(extraction, questions_with_rubrics)
+
+def _render_extraction(extraction: list[dict]) -> str:
+    parts = []
+    for page in extraction:
+        parts.append(f"--- Page {page.get('page', '?')} ---")
+        for block in page.get("blocks", []):
+            btype = block.get("type", "")
+            text = block.get("text", "")
+            if btype == "table":
+                rows = block.get("rows", [])
+                for row in rows:
+                    parts.append("| " + " | ".join(row) + " |")
+            elif btype == "diagram":
+                parts.append(f"[DIAGRAM description: {text}]")
+            else:
+                parts.append(text)
+    return "\n".join(parts)
+
+def _real_grade(extraction: list[dict], questions_with_rubrics: list[dict]) -> dict:
+    evaluation: dict = {}
+    total_marks = 0.0
+    max_total = 0.0
+    global_needs_review = False
+    
+    full_text = _render_extraction(extraction)
+    
+    sys_prompt = (
+        "You are a strict but fair examiner marking handwritten answers that were transcribed by OCR.\n"
+        "Score ONLY from what the student wrote.\n"
+        "Award partial credit per rubric criterion; never exceed a criterion's max.\n"
+        "evidence must be a short verbatim quote from the student's text (empty string if none). Never invent quotes.\n"
+        "Accept correct answers worded differently from the answer key.\n"
+        "For tables, check cell values against the key. For diagrams, judge only from the description and lower confidence if the description is thin.\n"
+        "Text marked [illegible] or [page unreadable] earns no marks for that part; lower confidence and say so in the reason.\n"
+        "If no answer for this question is found, set answer_found=false and award 0.\n"
+        "confidence is 0 to 1: how sure you are of this criterion's mark given OCR quality and ambiguity.\n"
+        "Output ONLY a JSON object:\n"
+        "{\"answer_found\": bool, \"student_answer\": \"short transcription of what you graded\", "
+        "\"criteria\":[{\"name\":\"\",\"max\":0.0,\"awarded\":0.0,\"reason\":\"\",\"evidence\":\"\",\"confidence\":0.0}], "
+        "\"feedback\": \"1 to 2 sentences of constructive feedback addressed to the student\"}"
+    )
+
+    for q in questions_with_rubrics:
+        qnum = q["number"]
+        rubric_dict = q.get("rubric") or {}
+        criteria = rubric_dict.get("criteria", [])
+        q_max_marks = float(q["max_marks"])
+        
+        user_prompt = (
+            f"Question number: {qnum}\n"
+            f"Question text: {q['text']}\n"
+            f"Answer key: {q.get('answer_key', '')}\n"
+            f"Max marks: {q_max_marks}\n"
+            f"Rubric: {json.dumps(criteria)}\n\n"
+            f"--- STUDENT SUBMISSION ---\n{full_text}\n"
+        )
+        
+        q_max_total = sum(float(c.get("max_marks", 0.0)) for c in criteria)
+        max_total += q_max_total
+        
+        try:
+            res = call_gemma_json(sys_prompt, user_prompt)
+            
+            answer_found = res.get("answer_found", False)
+            student_answer = res.get("student_answer", "")
+            res_criteria = res.get("criteria", [])
+            feedback = res.get("feedback", "")
+            
+            q_needs_review = False
+            if not answer_found or "[illegible]" in student_answer.lower():
+                q_needs_review = True
+                
+            processed_criteria = []
+            q_awarded = 0.0
+            
+            # Map input criteria to results in case AI misses some
+            c_results_by_name = {c.get("name", ""): c for c in res_criteria}
+            
+            for orig_c in criteria:
+                name = orig_c.get("name", "")
+                c_max = float(orig_c.get("max_marks", 0.0))
+                
+                ai_c = c_results_by_name.get(name, {})
+                awarded = float(ai_c.get("awarded", 0.0))
+                
+                # Clamp and round to 0.5
+                awarded = max(0.0, min(awarded, c_max))
+                awarded = round(awarded * 2) / 2.0
+                
+                confidence = float(ai_c.get("confidence", 0.5))
+                if confidence < 0.6:
+                    q_needs_review = True
+                    
+                processed_criteria.append({
+                    "name": name,
+                    "max": c_max,
+                    "awarded": awarded,
+                    "reason": ai_c.get("reason", "No reason provided."),
+                    "evidence": ai_c.get("evidence", ""),
+                    "confidence": confidence
+                })
+                
+                q_awarded += awarded
+                
+            if q_needs_review:
+                global_needs_review = True
+                
+            total_marks += q_awarded
+            
+            evaluation[qnum] = {
+                "answer_found": answer_found,
+                "student_answer": student_answer,
+                "criteria": processed_criteria,
+                "feedback": feedback,
+                "question_total": q_awarded,
+                "question_max": q_max_total,
+            }
+            
+        except Exception as e:
+            logger.error(f"Error grading question {qnum}: {e}")
+            evaluation[qnum] = {
+                "error": str(e),
+                "question_max": q_max_total
+            }
+            global_needs_review = True
+            
+    return {
+        "evaluation": evaluation,
+        "total_marks": total_marks,
+        "max_total": max_total,
+        "needs_review": global_needs_review
+    }
+
 
 
 def _mock_grade(extraction: list[dict], questions_with_rubrics: list[dict]) -> dict:
