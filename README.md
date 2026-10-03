@@ -11,6 +11,12 @@
 
 ---
 
+<p align="center">
+  <img src="docs/images/hero-landing.jpeg" alt="GradeFlow-AI Landing Banner" width="100%" />
+</p>
+
+---
+
 ## 📌 Executive Summary
 
 Manual grading of academic scripts—comprising **handwritten theory**, **complex technical diagrams**, and **structured data tables**—is notoriously time-consuming, inconsistent, and prone to evaluator fatigue.
@@ -18,6 +24,42 @@ Manual grading of academic scripts—comprising **handwritten theory**, **comple
 **GradeFlow-AI** is a high-performance, privacy-first, end-to-end evaluation pipeline that automates the assessment of handwritten student exam papers with mathematical rigor, verbatim textual evidence citation, and confidence-scored rubric compliance.
 
 By pairing a specialized vision-language model (**Qwen3-VL**) for document layout and handwriting OCR with a local reasoning model (**Gemma E2B**) for multi-criteria rubric evaluation, GradeFlow-AI delivers reliable, auditable, and transparent grading directly on development hardware without recurring cloud API fees.
+
+<p align="center">
+  <img src="docs/images/ocr-ai-evaluation.jpeg" alt="Real-time OCR Extraction and AI Evaluation Preview" width="85%" />
+</p>
+
+---
+
+## 📸 Product Walkthrough & UI Showcase
+
+### 1. Educator Dashboard
+A streamlined management console displaying active exam assignments, question counts, and submission statuses.
+
+<p align="center">
+  <img src="docs/images/dashboard-view.jpeg" alt="GradeFlow-AI Educator Dashboard" width="95%" />
+</p>
+
+### 2. Assignment Details & Submissions Pipeline
+Inspect question-level rubric criteria and mark weights, upload student handwritten PDF scans, and monitor automated scoring with evidence justification.
+
+<p align="center">
+  <img src="docs/images/assignment-grading-view.jpeg" alt="Assignment Details and Submission Grading Interface" width="95%" />
+</p>
+
+### 3. Intelligent Evaluation Capabilities
+Comprehensive multi-modal evaluation combining automated rubric synthesis, high-accuracy handwriting OCR, strict evidence grounding, and personalized student feedback.
+
+<p align="center">
+  <img src="docs/images/features-overview.jpeg" alt="Core Platform Capabilities" width="95%" />
+</p>
+
+### 4. End-to-End Grading Workflow
+A friction-free four-stage pipeline guiding educators from rubric creation to automated grading and final human-in-the-loop publication.
+
+| Step 01–03: Setup, Ingestion & AI Grading | Step 02–04: OCR, Evaluation & Verification |
+| :---: | :---: |
+| <img src="docs/images/workflow-steps.jpeg" alt="Workflow Steps 1 to 3" width="100%" /> | <img src="docs/images/workflow-review.jpeg" alt="Workflow Steps 2 to 4" width="100%" /> |
 
 ---
 
@@ -274,7 +316,7 @@ create table results (
 
 ### 2. Environment Setup
 ```bash
-git clone https://github.com/your-username/GradeFlow-AI.git
+git clone https://github.com/codie-ds/GradeFlow-AI.git
 cd GradeFlow-AI/backend
 
 # Initialize Virtual Environment
@@ -354,6 +396,12 @@ Interactive Swagger docs will be live at `http://localhost:8000/docs`.
 - [ ] **Diagram Graph Equivalence**: Compile extracted flowcharts and network diagrams into Mermaid/Graphviz ASTs for deterministic graph isomorphism checks.
 - [ ] **Student Growth Insights**: Generate automated personalized feedback summaries and study recommendations based on recurring rubric deficiencies.
 - [ ] **LMS Integration**: LTI 1.3 plug-in compatibility for Canvas, Moodle, and Google Classroom.
+
+---
+
+<p align="center">
+  <img src="docs/images/cta-banner.jpeg" alt="Ready to Transform Your Grading" width="90%" />
+</p>
 
 ---
 
