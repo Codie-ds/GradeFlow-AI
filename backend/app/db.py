@@ -141,7 +141,7 @@ def get_submission(submission_id: str) -> dict:
 
 
 def list_submissions(assignment_id: str | None = None) -> list[dict]:
-    q = _db().table("submissions").select("*").order("submitted_at", desc=True)
+    q = _db().table("submissions").select("*").order("created_at", desc=True)
     if assignment_id:
         q = q.eq("assignment_id", assignment_id)
     return q.execute().data

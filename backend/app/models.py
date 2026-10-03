@@ -34,7 +34,7 @@ class Submission(BaseModel):
     file_path: str
     status: SubmissionStatus = "uploaded"
     error: str | None = None
-    submitted_at: datetime | None = None
+    created_at: datetime | None = None
 
 
 class Result(BaseModel):

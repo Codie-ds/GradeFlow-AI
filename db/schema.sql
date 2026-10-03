@@ -27,7 +27,7 @@ create table if not exists submissions (
     status        text        not null default 'uploaded'
                               check (status in ('uploaded','processing','graded','failed')),
     error         text,
-    submitted_at  timestamptz default now()
+    created_at  timestamptz default now()
 );
 
 create table if not exists results (
