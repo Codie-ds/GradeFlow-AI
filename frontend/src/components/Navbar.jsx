@@ -9,7 +9,7 @@ export default function Navbar() {
   const { pathname } = useLocation();
 
   const navLinks = [
-    { to: "/", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/new", label: "New Assignment", icon: PlusCircle },
   ];
 

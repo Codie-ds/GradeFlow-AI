@@ -154,7 +154,7 @@ export default function CreateAssignment() {
         </div>
 
         <div className="flex gap-3 justify-end">
-          <Button type="button" variant="ghost" onClick={() => navigate("/")}>Cancel</Button>
+          <Button type="button" variant="ghost" onClick={() => navigate("/dashboard")}>Cancel</Button>
           <Button type="submit" loading={loading}>
             Create & Generate Rubrics <ChevronRight className="w-4 h-4" />
           </Button>

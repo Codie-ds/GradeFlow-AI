@@ -140,7 +140,7 @@ export default function ResultPage() {
     <PageShell>
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm">
-        <button onClick={() => navigate("/")} className="text-slate-500 hover:text-white transition-colors">Dashboard</button>
+        <button onClick={() => navigate("/dashboard")} className="text-slate-500 hover:text-white transition-colors">Dashboard</button>
         <span className="text-slate-600">/</span>
         <button onClick={() => navigate(`/assignments/${assignmentId}`)} className="text-slate-500 hover:text-white transition-colors">Assignment</button>
         <span className="text-slate-600">/</span>

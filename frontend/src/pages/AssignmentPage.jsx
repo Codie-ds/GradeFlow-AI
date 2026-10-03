@@ -197,7 +197,7 @@ export default function AssignmentPage() {
   return (
     <PageShell>
       <div className="flex items-center gap-2 mb-6">
-        <button onClick={() => navigate("/")} className="text-slate-400 hover:text-white transition-colors">
+        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors">
           <ChevronLeft className="w-5 h-5" />
         </button>
         <span className="text-slate-500 text-sm">Dashboard</span>

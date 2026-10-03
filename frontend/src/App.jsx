@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import CreateAssignment from "./pages/CreateAssignment";
 import AssignmentPage from "./pages/AssignmentPage";
@@ -20,13 +21,17 @@ function AmbientBackground() {
   );
 }
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
+
   return (
-    <BrowserRouter>
+    <>
       <AmbientBackground />
-      <Navbar />
+      {!isLandingPage && <Navbar />}
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/new" element={<CreateAssignment />} />
         <Route path="/assignments/:id" element={<AssignmentPage />} />
         <Route
@@ -34,6 +39,16 @@ export default function App() {
           element={<ResultPage />}
         />
       </Routes>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
+
+
