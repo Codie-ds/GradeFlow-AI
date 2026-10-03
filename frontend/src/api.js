@@ -1,5 +1,7 @@
-// API client — all calls go through here
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+// API client — all calls go through here.
+// Uses a relative path so Vite's dev proxy forwards to FastAPI,
+// and production builds can set VITE_API_URL if needed.
+const BASE = import.meta.env.VITE_API_URL || "/api";
 
 async function request(method, path, body, isFormData = false) {
   const opts = {
