@@ -44,6 +44,11 @@ def list_assignments() -> list[dict]:
     return res.data
 
 
+def delete_assignment(assignment_id: str) -> None:
+    _db().table("assignments").delete().eq("id", assignment_id).execute()
+
+
+
 def get_assignment_with_questions(assignment_id: str) -> dict:
     a = _db().table("assignments").select("*").eq("id", assignment_id).single().execute()
     q = _db().table("questions").select("*").eq("assignment_id", assignment_id).order("number").execute()
@@ -98,6 +103,18 @@ def create_submission(
         "status": "uploaded",
     }).execute()
     return res.data[0]
+
+
+def update_submission_file_path(submission_id: str, file_path: str) -> dict:
+    res = (
+        _db()
+        .table("submissions")
+        .update({"file_path": file_path})
+        .eq("id", submission_id)
+        .execute()
+    )
+    return res.data[0]
+
 
 
 def update_submission_status(

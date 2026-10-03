@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     supabase_url: str
     supabase_service_key: str
     storage_bucket: str = "submissions"
+    mock_ai: bool = True
     qwen_base_url: str = ""
     qwen_api_key: str = ""
     qwen_model: str = ""
